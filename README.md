@@ -1,102 +1,27 @@
-# LeNetAR: Deep Learning Training and Deployment on AR Headsets
+# On-Device CNN Inference for AR Headsets
 
-This repository contains deep learning models, training pipelines, and deployment examples developed for Microsoft HoloLens augmented reality headsets.
+This project implements a workflow for deploying trained CNN models directly on AR headsets for standalone inference. CNNs are trained in Python, their optimized weights and biases are converted to a C#/Unity-compatible 1D representation, and inference is executed on-device without external processing or network dependence.
 
-The repository demonstrates the complete workflow from model training in Python to deployment in Unity using C#.
+## Methodology
 
-## Overview
+The deployment workflow has four stages. First, a CNN is trained offline in Python using standard feedforward and backpropagation steps to optimize the model parameters. Second, the trained weights and biases are extracted from the best-performing model. Third, these parameters are converted into one-dimensional arrays so they can be used in the C#/UnityEngine environment of the AR headset. Fourth, images captured by the headset camera are converted to 1D arrays and passed through the pretrained CNN on-device, and the prediction is displayed to the user in the AR environment.
 
-The project was originally developed to deploy a LeNet-5 model trained on the MNIST dataset to AR headsets. The repository has since been expanded to include crack classification and crack segmentation models following the same deployment workflow.
+![CNN deployment workflow](./method.jpg)
 
-The general process is:
+## Results
 
-1. Train and evaluate the model in Python.
-2. Export trained weights to a C#-compatible format.
-3. Integrate the exported weights into a Unity project.
-4. Deploy the application to Microsoft HoloLens using UWP.
+### Proof of concept
 
-## Repository Structure
+LeNet-5 was first deployed on Microsoft HoloLens 2 using MNIST as a proof of concept. The model achieved 99.1% test accuracy before deployment. On the headset, inference was triggered by the voice command `predict`, and the mean end-to-end time from image capture to displayed prediction was 883 ms over 10 tests.
 
-### Training
+### Crack classification
 
-Python training, evaluation, and weight-export files are maintained in a separate repository:
+The same deployment workflow was then evaluated on real cracks captured with HoloLens 2 on concrete, walls, and asphalt surfaces. Examples of true positive, true negative, and false negative predictions are shown below.
 
-**Python-Training-for-Unity-AR**
+![Crack classification examples on HoloLens 2](./crack_detection.png)
 
-https://github.com/kmalek-eng/Python-Training-for-Unity-AR
+On the computer test set, LeNet-5 achieved 99.05% accuracy, 99.45% precision, 98.68% recall, and 99.06% F1-score. On HoloLens 2, accuracy was 97.6% under stable capture conditions and 90.6% under more difficult lighting, motion, and viewing-distance conditions.
 
-This repository contains the training pipelines for:
+![Crack classification confusion matrices](./crack_detection_conf.svg)
 
-* LeNet-5 MNIST classification
-* Crack classification
-* Crack segmentation
-
-### LeNetAR
-
-Unity implementation of the LeNet-5 MNIST classifier for Microsoft HoloLens and HoloLens 2.
-
-The project is developed using:
-
-* Unity
-* C#
-* UnityEngine
-* Universal Windows Platform (UWP)
-
-The same deployment approach can be applied to the crack classification and crack segmentation models after exporting their trained weights to C# format.
-
-## Requirements
-
-### Deployment
-
-* Unity 2019.4.40f1
-* Microsoft HoloLens or HoloLens 2
-* Windows UWP SDK
-
-## Setup
-
-Clone the repository:
-
-```bash
-git clone https://github.com/kmalek-eng/LeNetAR.git
-cd LeNetAR
-```
-
-To open the AR application:
-
-1. Launch Unity Hub.
-2. Add the LeNetAR project.
-3. Open the project in Unity.
-4. Set the build target to UWP.
-5. Build and deploy to HoloLens.
-
-## Usage
-
-Once deployed, the application will:
-
-* Recognize handwritten digits through the AR headset.
-* Display the recognition results in real-time within the AR environment.
-
-## Citation
-
-If you use this code, please cite the author:
-
-Kaveh Malek
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-* Unity Technologies
-* Microsoft HoloLens
-* MNIST Dataset
-* Amr Kassaem for enabling built-in voice recognition commands
-
-
-
-
-https://github.com/KaMa85/LeNet/assets/82784239/7ebb861a-7852-4702-925f-e89c9f4d81e4
-
-
-
+https://github.com/user-attachments/assets/51bfe0f3-da45-42eb-909b-c961141cc66c
